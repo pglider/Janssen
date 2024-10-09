@@ -1,0 +1,2 @@
+magick mogrify -format jpg -background white -alpha remove -quality 97 OUTPUT/p*.eps
+ffmpeg -framerate 15 -y -i C:\Users\titoi\Documents\Janssen\OUTPUT\p%%05d.jpg -c:v libx264 C:\Users\titoi\Documents\Janssen\OUTPUT\_movie.mp4

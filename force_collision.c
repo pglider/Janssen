@@ -17,8 +17,8 @@ void force_collision(int vlcontact) {
 
 	//Compute the difference of position between the grains i and j
 	//For periodic boundary conditions
-	x = CLPdist(disk[j].x -disk[i].x,WIDTH);
-	y = disk[j].y -disk[i].y ;
+	x = disk[j].x -disk[i].x;
+	y = disk[j].y -disk[i].y;
 
 	//Use these for alternative formulations of the normal force. Such formulations can be useful to make some properties independent on the grain size or mass
 	//reff=(disk[i].Ray*disk[j].Ray)/(disk[i].Ray+disk[j].Ray);// Effective radius for the dissipation force [OLD FORMULATION]
@@ -43,7 +43,7 @@ void force_collision(int vlcontact) {
 
 	// Compute the normal speed Vn=\vec{v}.\vec{n}, viscoelastic model
 	Vn=(disk[j].dx-disk[i].dx)*nx + (disk[j].dy-disk[i].dy)*ny;
-	Fn=- ( KN* delta - GAMMA*Vn);
+	Fn=- ( KN * delta - GAMMA * Vn);
 
 	// Component of the sliding speed (relative speed - normal speed + Varignon formula), then norm
 	Vsx= disk[j].dx - disk[i].dx - Vn*nx + ny*(disk[j].dOz*disk[j].Ray + disk[i].dOz*disk[i].Ray);
@@ -75,8 +75,8 @@ void force_collision(int vlcontact) {
 	else{
 		disk[i].utijx[vlcontact]+=KT*Vsx*DT;
 		disk[i].utijy[vlcontact]+=KT*Vsy*DT;
-		ftx=disk[i].utijx[vlcontact];//+ 0.001*Vsx;
-		fty=disk[i].utijy[vlcontact];//+ 0.001*Vsy;
+		ftx=disk[i].utijx[vlcontact] + 0.0001*Vsx;
+		fty=disk[i].utijy[vlcontact] + 0.0001*Vsy;
 	}
 
 	//Debugging observed cohesion : Taking fn negative only

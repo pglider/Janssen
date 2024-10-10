@@ -34,7 +34,7 @@ void search_collision(void) {
 					{
 
 						// collision ?
-						if( (CLPdist((disk[i].x -disk[j].x),WIDTH)*CLPdist((disk[i].x -disk[j].x ),WIDTH) + (disk[i].y - disk[j].y )*(disk[i].y -disk[j].y)) < ((disk[i].Ray + disk[j].Ray)*(disk[i].Ray + disk[j].Ray)))
+						if( ((disk[i].x -disk[j].x)*(disk[i].x -disk[j].x ) + (disk[i].y - disk[j].y )*(disk[i].y -disk[j].y)) < ((disk[i].Ray + disk[j].Ray)*(disk[i].Ray + disk[j].Ray)))
 							{  
 
 							// Looking if the contact is already existing

@@ -38,11 +38,7 @@ void force_walls(void) {
             //disk[i].highlight=1;
             
             // Looking if the contact is already existing
-            if(disk[i].contactwallpr[wall_index]==1){
-                disk[i].utijx_walls[wall_index]=disk[i].utijxpr_walls[wall_index];
-                disk[i].utijy_walls[wall_index]=disk[i].utijypr_walls[wall_index];
-            }
-            else{
+            if(disk[i].contactwallpr[wall_index]==0){
                 //New contact
                 disk[i].contactwallpr[wall_index]=1;
                 disk[i].utijx_walls[wall_index]=0.;
@@ -52,10 +48,9 @@ void force_walls(void) {
             
             // Compute the normal speed Vn=\vec{v}.\vec{n}, viscoelastic model
             Vn= - disk[i].dx*nx - disk[i].dy*ny;
+            //WARNING : TAKE WALL DX AND DY INTO ACCOUNT
+            //Vn= - (disk[i].dx-wall_dx)*nx + (wall_dy-disk[i].dy)*ny;
             Fn=- ( KN * delta - GAMMA*Vn);
-            
-            //Compute the normal speed
-            Vn = disk[i].dx * nx + disk[i].dy * ny;
 
             // Component of the sliding speed (relative speed - normal speed + Varignon formula), then norm
             Vsx= - disk[i].dx - Vn*nx + ny*disk[i].dOz*disk[i].Ray;
@@ -66,6 +61,9 @@ void force_walls(void) {
             utx=disk[i].utijx_walls[wall_index]+KT*Vsx*DT;
             uty=disk[i].utijy_walls[wall_index]+KT*Vsy*DT;
             ut=sqrt(utx*utx+uty*uty);
+            if(fabs(ut/(MU_WALL*Fn))>0.95){                
+                disk[i].highlight=1;
+            }
             if(fabs(ut/(MU_WALL*Fn))>1. && (utx*Vsx)>0 && (uty*Vsy)>0) {
                 //First we determine the direction of the normalized sliding speed
                 if(Vs==0.) {
@@ -83,13 +81,12 @@ void force_walls(void) {
 
                 disk[i].utijx_walls[wall_index]=ftx;
                 disk[i].utijy_walls[wall_index]=fty;
-                disk[i].highlight=1;
             }
             else{
                 disk[i].utijx_walls[wall_index]+=KT*Vsx*DT;
                 disk[i].utijy_walls[wall_index]+=KT*Vsy*DT;
-                ftx=disk[i].utijx_walls[wall_index];//+ GAMMA_PREFACTOR*GAMMA*reff/(.5*R)*Vsx;
-                fty=disk[i].utijy_walls[wall_index];//+ GAMMA_PREFACTOR*GAMMA*reff/(.5*R)*Vsy;
+                ftx=disk[i].utijx_walls[wall_index] + 0.0001*Vsx;
+                fty=disk[i].utijy_walls[wall_index] + 0.0001*Vsy;
             }
 
             //Debugging observed cohesion : Taking fn negative only

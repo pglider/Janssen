@@ -20,10 +20,10 @@ void init_grains(void) {
 	srand(SEED);
 
 	// Display duration of a collision and restitution coefficient
-    tcoll = 3.14/sqrt(KN/MASS - 0.25*(GAMMA*GAMMA)/(MASS*MASS));
-    printf("Duration of a collision DT = %f = %.0f timesteps\n", tcoll,tcoll/DT);
+    tcoll = 2*MASS*3.14/sqrt(4*KN*MASS - GAMMA*GAMMA);
+    printf("Duration of a collision tcoll = %f = %f timesteps\n", tcoll,tcoll/(double)(DT));
     printf("Restitution e = %f\n\n",exp(-GAMMA/(2*MASS) * tcoll));
-
+    printf("tcoll = %f, DT = %f\n",KN*MASS,GAMMA*GAMMA);
 	Y0=y_piston+2*R;
 
 	i=1;

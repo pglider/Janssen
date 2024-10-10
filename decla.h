@@ -19,11 +19,12 @@
 #define MIN(A,B)      ( (A) < (B) ? (A) : (B) )
 //SIGN function
 #define SIGN(A) ( (A)<(0) ? (-1) : (1))
+#define PI 3.14159
 
 /*========================= Simulation size =========================*/
 
-#define N_PART 80   			        // number of grains
-#define L 6					        // length of simulation WARNING : must chose multiple of 2
+#define N_PART 60   			        // number of grains
+#define L 4					        // length of simulation WARNING : must chose multiple of 2
 #define H 50					        // height of simulation
 #define NCELLX L                        //number of cell coulmns
 #define NCELLY H                        //number of cell rows
@@ -33,17 +34,19 @@
 
 /*========================= Grain properties =========================*/
 
-#define R 0.0005    				        // average particle radius (+-20%)
+#define R 0.001    				        // average particle radius (+-20%)
 #define POLYDISP 0.2			        //Dans une population (gros ou petits), on a rmax = (1 + POLYDISP)*R
 #define grid 2.5                        //size of initial grid
-#define MASS 1.3e-6     			        // mass of a grain of radius R
+#define RHO 2500.				        // density of grains
+#define MASS (double)(RHO*R*R*R*PI)     			        // mass of a grain of radius R
+#define ELL 0.5         //Elastic restitution
 #define I 2*MASS*R*R/5			        // inertia momentum
-#define KN 400				            // spring constant
+#define KN 1e3 * MASS*G/R			            // spring constant, set so that failling of 10d gives d/100 of overlap
 #define KT 0.285*KN 			        // tangential spring constant
-#define GAMMA 0.001855				    // dashpot constant
+#define GAMMA -2*log(ELL)*sqrt(MASS*KN)/sqrt(log(ELL)*log(ELL)+PI*PI)				    // dashpot constant
 #define GAMMA_PREFACTOR 0.              // tangential gamma
-#define MU .8					        // friction VEL_COEFF between particles
-#define MU_WALL .8					        // friction VEL_COEFF between particles and walls
+#define MU .25					        // friction VEL_COEFF between particles
+#define MU_WALL .25					        // friction VEL_COEFF between particles and walls
 #define KR 0	                        // rotational spring constant
 #define CR 0	                        // rotational viscosity
 #define FORCE_COHESION 0;               // cohesion between grains
@@ -57,31 +60,30 @@
 /*========================= Physical and simulation constants =========================*/
 
 #define G 9.8                           //acceleration of gravity (in m.s^-2)
-#define DT 2e-6                         // time step
+#define DT 0.2*2 * sqrt(MASS/KN) //Time step
 #define SEED 1
-#define PI 3.14159
 #define MU0 4*PI*1e-7 			   // magnetic permeability of free space
 #define PREF1 3*MU0/(4*PI)              // prefactor for magnetic force
 #define PREF2 MU0/(4*PI)              // prefactor for magnetic torque
 
 /*========================= Output Parameters =========================*/
 
-#define PASTPS_EPS 10000		            // save eps file every PASTPS_EPS
-#define PASTPS_EPS_END 1000000			// stop saving eps file after PASTPS_EPS_END
-#define NB_ITERATION 1000000           // max number of time steps
+#define PASTPS_EPS 20000		            // save eps file every PASTPS_EPS
+#define PASTPS_EPS_END 4500000			// stop saving eps file after PASTPS_EPS_END
+#define NB_ITERATION 4500000           // max number of time steps
 #define ENERGY_FREQ 1000                // save energy every ENERGY_FREQ
 #define POS_FREQ 100000				   // save positions every POS_FREQ
-#define SEDIMENTATION_TIME 60000      // time after which grains are considered to be in sedimentation regime
+#define SEDIMENTATION_TIME 30000      // time after which grains are considered to be in sedimentation regime
 #define MAGNETIZATION_RAMP_TIME 50000 // time during which the magnetic grains are progressively magnetized
-#define SCALE 40000.				        // SCALE size on .eps
+#define SCALE 20000.				        // SCALE size on .eps
 #define NMAXcontacts 10                 //Max number of contacts per grain
 
 #define DRAWFORCES 1					//Draw forces on grains
 #define MAXWALLS 4					  //Maximum number of walls
 
 
-#define Y0_PISTON 0.02                   //initial position of the piston
-#define V_PISTON 0.0008                  //velocity of the piston
+#define Y0_PISTON 10                   //initial position of the piston
+#define V_PISTON 0.0002                  //velocity of the piston
 /*================================================================================*/
 
 // grains are defined as a structure

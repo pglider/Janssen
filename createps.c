@@ -2,7 +2,7 @@
 
 void createps(char * save_folder, int ieps){
 	char name[255],fileps[255]="",str[50];
-	double xref,xref2,yref,xi,yi,xj,yj,fn;
+	double xref,yref,xi,yi,xj,yj,fn;
 	int forcetype;
 
 	if(err==1){
@@ -33,7 +33,7 @@ void createps(char * save_folder, int ieps){
     //Bounding box
 	fprintf(pos_eps,"%%");
 	//sprintf(str,"%%BoundingBox: %d %d %d %d\n",(int)(-2*R*SCALE),(int)(-2*R*SCALE),(int)((WIDTH+2*R)*SCALE),(int)(0.7*HEIGHT*SCALE));
-	sprintf(str,"%%BoundingBox: %d %d %d %d\n",(int)(-2*R*SCALE),(int)(0.25*HEIGHT*SCALE),(int)((WIDTH+2*R)*SCALE),(int)(0.5*HEIGHT*SCALE));
+	sprintf(str,"%%BoundingBox: %.2f %.2f %.2f %.2f\n",-2*R*SCALE,(y_piston-R)*SCALE,(WIDTH+2*R)*SCALE,(y_piston+30*R)*SCALE);
 	//Zoom on the first wall
 	//sprintf(str,"%%BoundingBox: %d %d %d %d\n",(int)(2*R*SCALE),(int)(0.031*SCALE),(int)((25*R)*SCALE),(int)(0.037*SCALE));
 	
@@ -59,8 +59,18 @@ void createps(char * save_folder, int ieps){
     //Background
     fprintf(pos_eps,"0 0 60000 0.55 0.76 0.22 sethsbcolor newpath 0 360 arc closepath gsave 0 setgray grestore fill stroke\n");
 
+	fprintf(pos_eps,"1 setlinewidth\n");
+
+	//Draw some guide lines
+	fprintf(pos_eps,"0.5 setgray\n");
+	for(i=1;i<=20;i++) {
+		fprintf(pos_eps,"%d %.2f M\n",(int)(-2*R*SCALE),(i*R*2)*SCALE);
+		fprintf(pos_eps,"%d %.2f L\n",(int)((WIDTH+2*R)*SCALE),(i*R*2)*SCALE);
+	}
+
+
 	// Draw walls
-	fprintf(pos_eps,"5 setlinewidth 0 1 0 sethsbcolor\n");
+	fprintf(pos_eps,"10 setlinewidth 0 1 0 sethsbcolor\n");
 	for (int i = 0; i < 4; i++) {
 		fprintf(pos_eps, "newpath\n");
 		fprintf(pos_eps, "%.3f %.3f moveto\n", walls[i].x1 * SCALE, walls[i].y1 * SCALE);
@@ -68,8 +78,10 @@ void createps(char * save_folder, int ieps){
 		fprintf(pos_eps, "stroke\n");
 	}
 
-	fprintf(pos_eps,"1 setlinewidth\n");
-    
+
+
+	fprintf(pos_eps,"0 0 0 sethsbcolor\n");
+    fprintf(pos_eps,"2 setlinewidth\n");
 	//Grains in the packing
 	for(i=1;i<=N_PART;i++) {
 
@@ -111,10 +123,11 @@ void createps(char * save_folder, int ieps){
 
 			//Color according to instantaneous speed
 			if(disk[i].highlight==0){
-			    fprintf(pos_eps,"\n%.3f %.3f %.3f %.3f 1 1 G", xref*SCALE, yref*SCALE, disk[i].Ray*SCALE, fmin(fmax(0.5 + disk[i].Oz*0.02,0.),1.));
+			    fprintf(pos_eps,"\n%.3f %.3f %.3f %.3f 0.7 1 G", xref*SCALE, yref*SCALE, disk[i].Ray*SCALE, fmin(fmax(0.5 + disk[i].Oz*0.1,0.35),0.65));
 			}
 			else{			
-			    fprintf(pos_eps,"\n%.3f %.3f %.3f 0 C", xref*SCALE, yref*SCALE, disk[i].Ray*SCALE);
+			    fprintf(pos_eps,"\n%.3f %.3f %.3f %.3f 1 0.7 G", xref*SCALE, yref*SCALE, disk[i].Ray*SCALE, fmin(fmax(0.5 + disk[i].Oz*0.1,0.35),0.65));
+				fprintf(pos_eps,"\n%.3f %.3f %.3f 0 C", xref*SCALE, yref*SCALE, 0.5*disk[i].Ray*SCALE);
 			}
 			
 			//Color according to number of contacts
@@ -156,7 +169,7 @@ void createps(char * save_folder, int ieps){
 	
 	}
 
-	fprintf(pos_eps,"\n0.5 setlinewidth");
+	fprintf(pos_eps,"\n1 setlinewidth");
     fprintf(pos_eps,"\n1 0 0.5 sethsbcolor");
 	fprintf(pos_eps,"\n[5 5] 0 setdash\n");
     fprintf(pos_eps,"\n%f %.1f M", 0*SCALE, 0.);
@@ -175,23 +188,23 @@ void createps(char * save_folder, int ieps){
 			sscanf(line, "%lf %lf %lf %lf %lf %d", &xi, &yi, &xj, &yj, &fn, &forcetype);
 			switch (forcetype) {
 				case 0://Normal forces between grains
-					fprintf(pos_eps,"\n0.1 0.1 0.1 sethsbcolor");
-					fprintf(pos_eps, "\n%f setlinewidth\n", fmax(fmin(fn * 50000, 20),1));
+					fprintf(pos_eps,"\n1 0.6 0.8 sethsbcolor");
+					fprintf(pos_eps, "\n%f setlinewidth\n", fmax(fmin(fn * 5000, 8),0.2));
 					fprintf(pos_eps, "%f %f M %f %f L\n", xi * SCALE, yi * SCALE, xj * SCALE, yj * SCALE);
 					break;
 				case 1://Tangential forces between grains
-					fprintf(pos_eps,"\n1 0.6 0.8 sethsbcolor");
-					fprintf(pos_eps, "\n%f setlinewidth\n", fmax(fmin(fn * 50000, 20),1));
-					fprintf(pos_eps, "%f %f M %f %f L\n", xi * SCALE, yi * SCALE, xj * SCALE, yj * SCALE);
+					// fprintf(pos_eps,"\n1 0.6 0.8 sethsbcolor");
+					// fprintf(pos_eps, "\n%f setlinewidth\n", fmax(fmin(fn * 4000, 5),0.5));
+					// fprintf(pos_eps, "%f %f M %f %f L\n", xi * SCALE, yi * SCALE, xj * SCALE, yj * SCALE);
 					break;
 				case 2://Normal forces grain-wall
 					fprintf(pos_eps,"\n0.3 0.9 0.8 sethsbcolor");
-					fprintf(pos_eps, "\n%f setlinewidth\n", fmax(fmin(fn * 50000, 20),1));
+					fprintf(pos_eps, "\n%f setlinewidth\n", fmax(fmin(fn * 5000, 8),0.2));
 					fprintf(pos_eps, "%f %f M %f %f L\n", xi * SCALE, yi * SCALE, xj * SCALE, yj * SCALE);
 					break;
 				case 3://Tangential forces grain-wall
 					fprintf(pos_eps,"\n0.2 0.3 1 sethsbcolor");
-					fprintf(pos_eps, "\n%f setlinewidth\n", fmax(fmin(fn * 50000, 20),1));
+					fprintf(pos_eps, "\n%f setlinewidth\n", fmax(fmin(fn * 5000, 8),0.2));
 					fprintf(pos_eps, "%f %f M %f %f L\n", xi * SCALE, yi * SCALE, xj * SCALE, yj * SCALE);
 					break;
 			}

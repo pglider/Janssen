@@ -12,8 +12,7 @@
 
 int main(){
 
-
-    printf("No arguments given, using default folder OUTPUT and theta = 25 deg\n");
+    printf("Starting simulation with %d particles, R = %f, MASS = %f, GAMMA = %f, DT = %e, KN = %f, MU = %f, V_PISTON = %f\n\n", N_PART, R, MASS, GAMMA, DT, KN, MU, V_PISTON);
     //create save directory
     sprintf(save_folder,"OUTPUT/");
     mkdir(save_folder,0700);
@@ -41,9 +40,9 @@ int main(){
     printf("Initializing walls...\n");
     load_walls();
     walls[0].x1 = 0;
-    walls[0].y1 = Y0_PISTON;
+    walls[0].y1 = Y0_PISTON*R;
     walls[0].x2 = WIDTH;
-    walls[0].y2 = Y0_PISTON;
+    walls[0].y2 = Y0_PISTON*R;
     walls[1].x1 = WIDTH;
     walls[1].y1 = 0;
     walls[1].x2 = WIDTH;
@@ -54,7 +53,7 @@ int main(){
     walls[2].y2 = HEIGHT;
     eps_count=1;
     //initialize grains
-    y_piston = Y0_PISTON;
+    y_piston = Y0_PISTON*R;
     printf("Initializing grains...\n");
     init_grains();
     printf("Grains initialized\n NB_ITERATION = %d\n", NB_ITERATION);
@@ -77,7 +76,7 @@ int main(){
             printf("--------------------------=============PISTON STARTING=========-----------------\n");
         }
         if(bcltps>SEDIMENTATION_TIME){
-            y_piston = Y0_PISTON - V_PISTON * (bcltps-SEDIMENTATION_TIME) * DT;
+            y_piston = Y0_PISTON*R - V_PISTON * (bcltps-SEDIMENTATION_TIME) * DT;
         }
         // Update the position of the first wall element with y_piston
         walls[0].y1 = y_piston;

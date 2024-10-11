@@ -62,7 +62,7 @@ void force_walls(void) {
             uty=disk[i].utijy_walls[wall_index]+KT*Vsy*DT;
             ut=sqrt(utx*utx+uty*uty);
             if(fabs(ut/(MU_WALL*Fn))>0.95){                
-                disk[i].highlight=1;
+                //disk[i].highlight=1;
             }
             if(fabs(ut/(MU_WALL*Fn))>1. && (utx*Vsx)>0 && (uty*Vsy)>0) {
                 //First we determine the direction of the normalized sliding speed

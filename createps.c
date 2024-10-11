@@ -63,7 +63,7 @@ void createps(char * save_folder, int ieps){
 
 	//Draw some guide lines
 	fprintf(pos_eps,"0.5 setgray\n");
-	for(i=1;i<=20;i++) {
+	for(i=1;i<=30;i++) {
 		fprintf(pos_eps,"%d %.2f M\n",(int)(-2*R*SCALE),(i*R*2)*SCALE);
 		fprintf(pos_eps,"%d %.2f L\n",(int)((WIDTH+2*R)*SCALE),(i*R*2)*SCALE);
 	}
@@ -123,13 +123,13 @@ void createps(char * save_folder, int ieps){
 
 			//Color according to instantaneous speed
 			if(disk[i].highlight==0){
-			    fprintf(pos_eps,"\n%.3f %.3f %.3f %.3f 0.7 1 G", xref*SCALE, yref*SCALE, disk[i].Ray*SCALE, fmin(fmax(0.5 + disk[i].Oz*0.1,0.35),0.65));
+			    fprintf(pos_eps,"\n%.3f %.3f %.3f %.3f 0.7 1 G", xref*SCALE, yref*SCALE, disk[i].Ray*SCALE, fmin(fmax(0.6 + (disk[i].zp-disk[i].Oz)*2,0.45),0.75));
 			}
 			else{			
-			    fprintf(pos_eps,"\n%.3f %.3f %.3f %.3f 1 0.7 G", xref*SCALE, yref*SCALE, disk[i].Ray*SCALE, fmin(fmax(0.5 + disk[i].Oz*0.1,0.35),0.65));
+			    fprintf(pos_eps,"\n%.3f %.3f %.3f %.3f 1 0.7 G", xref*SCALE, yref*SCALE, disk[i].Ray*SCALE, fmin(fmax(0.6 + (disk[i].zp-disk[i].Oz)*2,0.45),0.75));
 				fprintf(pos_eps,"\n%.3f %.3f %.3f 0 C", xref*SCALE, yref*SCALE, 0.5*disk[i].Ray*SCALE);
 			}
-			
+			disk[i].zp = disk[i].Oz;
 			//Color according to number of contacts
 			//fprintf(pos_eps,"\n%.3f %.3f %.3f %.3f C", xref*SCALE, yref*SCALE, disk[i].Ray*SCALE, 0.1 + disk[i].Nb_Contact*0.4/6);
 
